@@ -1,0 +1,90 @@
+# 1 Monitors disk space usage and sends an alert if usage exceeds a certain threshold.
+
+import shutil
+import smtplib
+
+def check_disk_usage(path, threshold):
+    total, used, free = shutil.disk_usage(path)
+    percent_used = (used / total) * 100
+    return percent_used > threshold
+
+def send_alert_email():
+    server = smtplib.SMTP('smtp.example.com', 587)
+    server.starttls()
+    server.login('user@example.com', 'password')
+    message = "Subject: Disk Space Alert\n\nDisk usage exceeded the threshold!"
+    server.sendmail('user@example.com', 'admin@example.com', message)
+    server.quit()
+
+if check_disk_usage('/', 80):
+    send_alert_email()
+
+
+# 2 Creates a compressed backup of a directory.
+import os
+import time
+import tarfile
+
+def backup_directory(source_dir, backup_dir):
+    timestamp = time.strftime("%Y%m%d-%H%M%S")
+    backup_file = os.path.join(backup_dir, f"backup-{timestamp}.tar.gz")
+    
+    with tarfile.open(backup_file, "w:gz") as tar:
+        tar.add(source_dir, arcname=os.path.basename(source_dir))
+    print(f"Backup created at {backup_file}")
+
+backup_directory('/path/to/source', '/path/to/backup')
+
+
+
+
+# 3 Logs CPU and memory usage at regular intervals.
+
+import psutil
+import time
+
+def monitor_system(interval=5):
+    while True:
+        cpu_usage = psutil.cpu_percent()
+        memory_info = psutil.virtual_memory()
+        print(f"CPU Usage: {cpu_usage}%, Memory Usage: {memory_info.percent}%")
+        time.sleep(interval)
+
+monitor_system()
+
+
+
+
+# 4 Adds or deletes a user on the system.
+
+
+import subprocess
+
+def manage_user(action, username):
+    if action == 'add':
+        subprocess.run(['sudo', 'useradd', username])
+        print(f"User {username} added.")
+    elif action == 'delete':
+        subprocess.run(['sudo', 'userdel', username])
+        print(f"User {username} deleted.")
+    else:
+        print("Invalid action. Use 'add' or 'delete'.")
+
+manage_user('add', 'newuser')
+
+
+
+# 5 Checks if a service is running and restarts it if it's not.
+
+ import subprocess
+
+def monitor_service(service_name):
+    status = subprocess.run(['systemctl', 'is-active', service_name], capture_output=True, text=True)
+    if 'inactive' in status.stdout:
+        subprocess.run(['sudo', 'systemctl', 'restart', service_name])
+        print(f"{service_name} was down and has been restarted.")
+    else:
+        print(f"{service_name} is running.")
+
+monitor_service('apache2')
+
